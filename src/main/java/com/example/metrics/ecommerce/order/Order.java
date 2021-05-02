@@ -24,6 +24,24 @@ public class Order {
 		allowedTransitions.put(CANCELED, new Status[]{});
 	}
 
+	public enum Status {
+		PENDING("PENDING"),
+		DISPATCHED("DISPATCHED"),
+		DELIVERED("DELIVERED"),
+		CANCELED("CANCELED"),
+		;
+
+		private final String text;
+
+		Status(final String text) {
+			this.text = text;
+		}
+
+		@Override public String toString() {
+			return text;
+		}
+	}
+
 	public static class Item {
 		private Integer itemId;
 		private Integer quantity;
@@ -79,23 +97,5 @@ public class Order {
 			);
 		}
 		this.status = status;
-	}
-
-	public enum Status {
-		PENDING("PENDING"),
-		DISPATCHED("DISPATCHED"),
-		DELIVERED("DELIVERED"),
-		CANCELED("CANCELED"),
-		;
-
-		private final String text;
-
-		Status(final String text) {
-			this.text = text;
-		}
-
-		@Override public String toString() {
-			return text;
-		}
 	}
 }
