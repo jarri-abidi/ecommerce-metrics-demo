@@ -7,7 +7,6 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 public class InvalidArgumentException extends RuntimeException {
 
     public InvalidArgumentException() {}
-
     public InvalidArgumentException(String msg) {
         super(msg);
     }

@@ -1,24 +1,17 @@
 package com.example.metrics.ecommerce.controller;
 
+import com.example.metrics.ecommerce.dto.CreateOrderRequest;
+import com.example.metrics.ecommerce.dto.UpdateOrderStatusRequest;
 import com.example.metrics.ecommerce.order.Order;
-import com.example.metrics.ecommerce.order.OrderNotFoundException;
-import com.example.metrics.ecommerce.order.OrderStatus;
-import com.example.metrics.ecommerce.order.OrderedItem;
+
 import io.prometheus.client.Counter;
 import io.prometheus.client.Gauge;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.LinkedList;
 import java.util.List;
-
-class CreateOrderRequest {
-	public String userEmail;
-	public List<OrderedItem> items;
-}
-
-class UpdateOrderStatusRequest {
-	public OrderStatus status;
-}
+import java.util.stream.Collectors;
 
 @RestController
 public class OrderController {
@@ -34,7 +27,12 @@ public class OrderController {
 
 	@PostMapping("/api/order")
 	public Order createOrder(@RequestBody CreateOrderRequest request) {
-		Order createdOrder = new Order(request.userEmail, request.items);
+		Order createdOrder = new Order(
+				request.userEmail,
+				request.items.stream()
+						.map(item -> new Order.Item(item.itemId, item.quantity))
+						.collect(Collectors.toList())
+		);
 		orders.add(createdOrder);
 
 		totalOrdersCounter.inc();
@@ -43,16 +41,25 @@ public class OrderController {
 		return createdOrder;
 	}
 
+	@ResponseStatus(value = HttpStatus.NOT_FOUND)
+	public static class OrderNotFoundException extends RuntimeException {
+
+		public OrderNotFoundException() {}
+		public OrderNotFoundException(String msg) { super(msg); }
+	}
+
 	@PatchMapping("/api/order/{orderId}")
 	public void updateStatus(@PathVariable Integer orderId, @RequestBody UpdateOrderStatusRequest request) {
+		Order.Status orderStatus = Order.Status.valueOf(request.status);
+
 		Order order = orders.stream().filter(o -> o.getId() == orderId).findFirst()
 				.orElseThrow(() -> new OrderNotFoundException(String.format("Order with Id %d does not exist", orderId)));
 
-		if (order.getStatus() == request.status) {
+		if (order.getStatus() == orderStatus) {
 			return; // for idempotency
 		}
 
-		order.setStatus(request.status);
+		order.setStatus(orderStatus);
 
 		switch (order.getStatus()) {
 			case CANCELED:
