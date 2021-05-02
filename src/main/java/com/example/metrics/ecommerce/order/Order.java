@@ -4,14 +4,17 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import static com.example.metrics.ecommerce.order.OrderStatus.*;
 
 public class Order {
 
+	private static AtomicInteger autoIncrementId = new AtomicInteger(1);
+
 	// allowedTransitions is a Map where each Key is an origin Status,
 	// and the Value for each Key contains an array of allowed destination Statuses.
-	static Map<OrderStatus, OrderStatus[]> allowedTransitions;
+	private static Map<OrderStatus, OrderStatus[]> allowedTransitions;
 
 	static {
 		allowedTransitions = new HashMap<>();
@@ -42,11 +45,8 @@ public class Order {
 		return orderedItems;
 	}
 
-	public Order(Integer id, String userEmail, List<OrderedItem> orderedItems) {
-		if (id < 1) {
-			throw new InvalidArgumentException("Id must be greater than 0");
-		}
-		this.id = id;
+	public Order(String userEmail, List<OrderedItem> orderedItems) {
+		this.id = autoIncrementId.getAndIncrement();
 		this.userEmail = userEmail;
 		this.status = PENDING;
 		this.orderedItems = orderedItems;

@@ -34,7 +34,7 @@ public class OrderController {
 
 	@PostMapping("/api/order")
 	public Order createOrder(@RequestBody CreateOrderRequest request) {
-		Order createdOrder = new Order((int) totalOrdersCounter.get()+1, request.userEmail, request.items);
+		Order createdOrder = new Order(request.userEmail, request.items);
 		orders.add(createdOrder);
 
 		totalOrdersCounter.inc();
