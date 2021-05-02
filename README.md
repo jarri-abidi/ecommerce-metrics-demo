@@ -1,22 +1,26 @@
 # Getting Started
 
-### Run prometheus in a container:
+#### Run prometheus in a container:
 `sudo docker run --net="host" -v $PWD/prometheus.yml:/etc/prometheus/prometheus.yml prom/prometheus`
 
-### Run the spring boot app.
+#### Run the spring boot app.
 
-### Create some orders:
-`curl -H "Content-Type: application/json" -H "Accept: application/json" -X POST --data '{"userEmail":"xyz@gmail.com","items": []}' http://localhost:8080/api/order`
+#### Create some orders:
 `curl -H "Content-Type: application/json" -H "Accept: application/json" -X POST --data '{"userEmail":"xyz@gmail.com","items": []}' http://localhost:8080/api/order`
 
-### Dispatch an order:
+`curl -H "Content-Type: application/json" -H "Accept: application/json" -X POST --data '{"userEmail":"xyz@gmail.com","items": []}' http://localhost:8080/api/order`
+
+#### Dispatch an order:
 `curl --request PATCH -H "Content-Type: application/json" --data '{"status": "DISPATCHED"}' http://localhost:8080/api/order/1`
 
-### Deliver an order:
+#### Deliver an order:
 `curl --request PATCH -H "Content-Type: application/json" --data '{"status": "DELIVER"}' http://localhost:8080/api/order/1`
 
-### Cancel an order:
+#### Cancel an order:
 `curl --request PATCH -H "Content-Type: application/json" --data '{"status": "CANCELED"}' http://localhost:8080/api/order/2`
 
-### Prometheus documentation
-https://prometheus.io/docs/introduction/overview/
+#### Navigate to Prometheus UI in your browser:
+`http://localhost:9090`
+#
+#### Prometheus documentation:
+https://prometheus.io/docs/introduction/overview
