@@ -22,8 +22,6 @@ public class OrderController {
 			.name("created_orders").help("Total orders.").register();
 	static final Counter canceledOrdersCounter = Counter.build()
 			.name("canceled_orders").help("Canceled orders.").register();
-	static final Gauge activeOrdersGauge = Gauge.build()
-			.name("active_orders").help("Orders not delivered/canceled yet.").register();
 	static final Histogram requestLatency = Histogram.build()
     		.name("requests_latency_seconds").help("Request latency in seconds.").register();
 	static final Summary receivedBytes = Summary.build()
@@ -44,7 +42,6 @@ public class OrderController {
 			orders.add(createdOrder);
 
 			totalOrdersCounter.inc();
-			activeOrdersGauge.inc();
 
 			return createdOrder;
     	} finally {
@@ -78,10 +75,6 @@ public class OrderController {
 			switch (order.getStatus()) {
 				case CANCELED:
 					canceledOrdersCounter.inc();
-					activeOrdersGauge.dec();
-					break;
-				case DELIVERED:
-					activeOrdersGauge.dec();
 					break;
 			}
 		} finally {
